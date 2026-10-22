@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TraceCharterBot</title>
+<meta name="description" content="What the TraceCharterBot web crawler does, how often it visits, and how to stop it.">
+<style>
+  :root { --bg: #ffffff; --fg: #1d1d1f; --muted: #5a5a60; --rule: #e3e3e6; --code: #f4f4f6; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151517; --fg: #ececee; --muted: #a2a2a8; --rule: #2e2e33; --code: #222226; }
+  }
+  html { background: var(--bg); }
+  body { margin: 0 auto; max-width: 42rem; padding: 2.5rem 1rem 4rem; color: var(--fg);
+         background: var(--bg); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  h1 { font-size: 1.9rem; margin: 0 0 1rem; }
+  h2 { font-size: 1.2rem; margin: 2rem 0 0.5rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+  code, pre { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.92em; }
+  pre { background: var(--code); padding: 0.75rem 1rem; border-radius: 6px; overflow-x: auto; }
+  code { background: var(--code); padding: 0.1em 0.3em; border-radius: 4px; }
+  pre code { background: none; padding: 0; }
+  ul { padding-left: 1.3rem; }
+  a { color: inherit; }
+  .muted { color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<h1>TraceCharterBot</h1>
+<p>TraceCharterBot is the web crawler of TraceCharter. If you saw it in your
+logs, this page explains what it does and how to control it.</p>
+
+<h2>What it does</h2>
+<p>TraceCharter follows public cybersecurity news and research. For each new
+article, it records when the article first appeared, so that we can show how
+a security story spread and which sources reported it first.</p>
+<p>The crawler reads about 38,000 cybersecurity websites. On each site it
+reads the home page, the RSS or Atom feed, the sitemap and robots.txt. It may
+also read article pages that these link to.</p>
+
+<h2>How it identifies itself</h2>
+<p>Every request carries this User-Agent:</p>
+<pre><code>TraceCharterBot/0.1 (+https://tracecharter.com/bot)</code></pre>
+<p>Requests come only from these addresses:</p>
+<ul>
+  <li><code>57.129.78.17</code></li>
+  <li><code>2001:41d0:701:1100::a284</code></li>
+</ul>
+<p>Both addresses have the reverse DNS name <code>miner.tracecharter.com</code>,
+and that name resolves back to the same addresses. A request that claims to be
+TraceCharterBot from any other address is not from us.</p>
+
+<h2>How often it visits</h2>
+<ul>
+  <li>Most pages: about once an hour.</li>
+  <li>Sites that publish many times a day: their feed may be checked every 5 to
+      30 minutes.</li>
+  <li>Never more than one request at a time to your site, and at least 10
+      seconds between requests.</li>
+  <li>It asks "has this changed?" first (conditional requests), so an unchanged
+      feed costs you a few hundred bytes.</li>
+  <li>If your server answers 429 or 503, it slows down and follows your
+      <code>Retry-After</code> header. It also follows a <code>Crawl-delay</code>
+      line in robots.txt.</li>
+</ul>
+
+<h2>How to stop it, or limit it</h2>
+<p>TraceCharterBot follows robots.txt. To block it from your whole site, add:</p>
+<pre><code>User-agent: TraceCharterBot
+Disallow: /</code></pre>
+<p>To block only part of your site, list those paths. If your robots.txt has no
+group for TraceCharterBot, it follows your <code>User-agent: *</code> group. It
+reads robots.txt again at least once a day, so a change takes effect within
+24 hours.</p>
+<p>You can also write to us, and we will stop visiting your site within two
+working days.</p>
+
+<h2>What it does not do</h2>
+<ul>
+  <li>It does not log in or fill in forms.</li>
+  <li>It does not solve CAPTCHAs or try to get around bot protection. If your
+      site blocks it, with robots.txt, an "access denied" answer or a bot check,
+      it stays out.</li>
+  <li>Some pages show their content only with JavaScript. For those, it may load
+      the page in a standard browser. It never uses a browser to get past a bot
+      check.</li>
+  <li>It does not store the names or e-mail addresses of authors.</li>
+  <li>It does not use your pages to train AI models.</li>
+</ul>
+
+<h2>Contact</h2>
+<p><a href="mailto:bot@tracecharter.com">bot@tracecharter.com</a></p>
+
+<p class="muted">Last updated: 22 October 2026</p>
+</body>
+</html>
